@@ -15,5 +15,5 @@ dynamic = ["version"]
 [project.optional-dependencies]
 dev = [
     "mypy",
-    "pydantic"
+    "pre-commit",
 ]
