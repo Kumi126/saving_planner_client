@@ -8,12 +8,22 @@ PLAN1: str = str(os.environ.get('plan1'))
 AC1_NAME:str = str(os.environ.get('account1'))
 AC2_NAME:str = str(os.environ.get('account2'))
 AC3_NAME:str = str(os.environ.get('account3'))
+AC4_NAME:str = str(os.environ.get('account4'))
+AC5_NAME:str = str(os.environ.get('account5'))
 AC1_INTRST_RATE:float = float(str(os.environ.get('ac1_interest_rate')))
 AC1_INTRST_RATE_LIMITED:float = float(str(os.environ.get('ac1_interest_rate_limited')))
 AC2_INTRST_RATE:float = float(str(os.environ.get('ac2_interest_rate')))
 AC2_INTRST_RATE_LIMITED:float = float(str(os.environ.get('ac2_interest_rate_limited')))
 AC3_INTRST_RATE:float = float(str(os.environ.get('ac3_interest_rate')))
 AC3_INTRST_RATE_LIMITED:float = float(str(os.environ.get('ac3_interest_rate_limited')))
+AC4_INTRST_RATE:float = float(str(os.environ.get('ac4_interest_rate')))
+AC4_BONUS:float = float(str(os.environ.get('ac4_bonus_interest_rate')))
+AC4_BONUS_FREQUENCY:int = int(str(os.environ.get('ac4_bonus_frequency')))
+AC4_BONUS_LIMIT: float = float(str(os.environ.get('ac4_bonus_limit')))
+AC5_INTRST_RATE:float = float(str(os.environ.get('ac5_interest_rate')))
+AC5_BONUS:float = float(str(os.environ.get('ac5_bonus_interest_rate')))
+AC5_BONUS_FREQUENCY:int = int(str(os.environ.get('ac5_bonus_frequency')))
+AC5_BONUS_LIMIT: float = float(str(os.environ.get('ac5_bonus_limit')))
 CNTR1_MONTHLY_ADD:float = float(str(os.environ.get('ctb1_monthly_add')))
 CNTR2_MONTHLY_ADD :float= float(str(os.environ.get('ctb2_monthly_add')))
 CNTR1_SAVED:float = float(str(os.environ.get('ctb1_saved')))
@@ -22,7 +32,7 @@ CNTR2_SAVED:float = float(str(os.environ.get('ctb2_saved')))
 ## input condition
 
 def cal_plan():
-    plan = SavingPlan(PLAN1,14)
+    plan = SavingPlan(PLAN1,13)
     
     users:list[SavingPlan.Contributor] = []
     users.append(usr1:= plan.Contributor(CONTRIBUTOR1, CNTR1_SAVED))
@@ -37,12 +47,24 @@ def cal_plan():
     accounts.append(ac1:= plan.Account(AC1_NAME, 100))
     accounts.append(ac2:= plan.Account(AC2_NAME, 4000))
     accounts.append(ac3:= plan.Account(AC3_NAME, 4000))
+    accounts.append(ac4:= plan.Account(AC4_NAME, 1))
+    accounts.append(ac5:= plan.Account(AC5_NAME, 1))
     accounts[0].interest_rate = accounts[0].set_interest_rate(AC1_INTRST_RATE)
     accounts[0].interest_rate_limited = accounts[0].set_interest_rate(AC1_INTRST_RATE_LIMITED) 
     accounts[1].interest_rate = accounts[1].set_interest_rate(AC2_INTRST_RATE)
     accounts[1].interest_rate_limited = accounts[1].set_interest_rate(AC2_INTRST_RATE_LIMITED) 
     accounts[2].interest_rate = accounts[2].set_interest_rate(AC3_INTRST_RATE)
     accounts[2].interest_rate_limited = accounts[2].set_interest_rate(AC3_INTRST_RATE_LIMITED) 
+    accounts[3].interest_rate = accounts[3].set_interest_rate(AC4_INTRST_RATE) 
+    accounts[4].interest_rate = accounts[4].set_interest_rate(AC5_INTRST_RATE) 
+    
+    
+    accounts[3].bonus_interest_rate = accounts[3].set_interest_rate(AC4_BONUS)
+    accounts[4].bonus_interest_rate = accounts[4].set_interest_rate(AC5_BONUS)
+    accounts[3].bonus_limit = AC4_BONUS_LIMIT
+    accounts[4].bonus_limit = AC5_BONUS_LIMIT
+    accounts[3].bonus_frequency = AC4_BONUS_FREQUENCY
+    accounts[4].bonus_frequency = AC5_BONUS_FREQUENCY
     
     accounts[1].interest_transfer = True
     accounts[1].interest_transfer_tgt = 'esaver'
@@ -55,9 +77,11 @@ def cal_plan():
     else:
         print('There is no match target bank acount name')
     
-    accounts[0].monthly_add = adding
+    accounts[0].monthly_add = 84
     accounts[1].monthly_add = 0
     accounts[2].monthly_add = 0
+    accounts[3].monthly_add = 333
+    accounts[4].monthly_add = 333
     
     
     ac1.limited_period = 1 ##
@@ -69,13 +93,12 @@ def cal_plan():
         print(count_month,'month')
         interest_transfer_pool:dict[str, float] = {}
         for acnt in accounts:
-            print(acnt.balance)
+            print(acnt.name)
             # if interest rate will be changed after ac1.limited_period month
             if count_month <= acnt.limited_period:
                 int_rate =  acnt.interest_rate_limited
             else:
                 int_rate = acnt.interest_rate
-            print(f'int_rate:{int_rate}')
             adding_interest:float = ((acnt.balance + acnt.monthly_add)*int_rate)/12
             print(adding_interest)
             # For the case interest will be added another account everymonth
@@ -95,8 +118,15 @@ def cal_plan():
                 new_balance = acnt.balance + acnt.monthly_add + adding_interest
             
             # if bonus apply
-            if acnt.bonus and count_month%acnt.bonus_frequency == 0:
-                new_balance += acnt.bonus
+            if acnt.bonus_interest_rate and count_month%acnt.bonus_frequency == 0:
+                bonus_amount = new_balance*acnt.bonus_interest_rate
+                if bonus_amount > acnt.bonus_limit:
+                    bonus_amount = acnt.bonus_limit
+                adding_interest += bonus_amount
+                new_balance += bonus_amount
+                
+            elif acnt.bonus_fixed and count_month%acnt.bonus_frequency == 0:
+                new_balance += acnt.bonus_fixed
             
             # update added amount
             acnt.earned_interest += adding_interest
