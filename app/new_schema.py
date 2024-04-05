@@ -1,4 +1,7 @@
-class Interest:
+from pydantic import BaseModel, Field
+from typing import Optional
+
+class Interest(BaseModel):
     balance_tier: float = 0
     rate: float = 0.0
     limited_period: int = 0
@@ -6,35 +9,32 @@ class Interest:
     def set_interest_rate(self, rate: float):
         return rate/100
     
-class Bonus:
+class Bonus(BaseModel):
     rate: float = 0.00
     limit: float = 0.00
     frequency: int = 0
     fixed: float = 0.00
     fixed_frequency: int = 0
     
-class Account:
-    name: str
-    balance: float
+class Account(BaseModel):
+    name: str = Field(max_length=20)
+    balance: float = 0.00
     monthly_add:float = 0.00
     earned_interest: float = 0.00
     earned_bonus: float = 0.00
-    interest_transfer_tgt: str
+    interest_transfer_tgt: Optional[str] = None
     interests: list[Interest] = []
-    interest_periodicity: str
-    bonus: Bonus
-    
-    def __init__(self, aname):
-        self.name = aname
+    interest_periodicity: str = 'Monthly'
+    bonus: Optional[Bonus] = None
 
 
-class SimulateCondition:
-    name:str
-    accounts:list[Account]
-    saving_month: int
+class SimulateCondition(BaseModel):
+    name:str = Field(max_length=20)
+    accounts:list[Account] = []
+    saving_month: int = 1
     
-    def __init__(self, name:str):
-        self.name = name
+    # def __init__(self, name:str):
+    #     self.name = name
 
 class Simulate(SimulateCondition):
     total_balance: float
