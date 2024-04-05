@@ -106,6 +106,7 @@ with st.form('submit simulation'):
         st.write(f'- {i.name}')
     st.write('number of accounts')
     st.write(len(accounts))
+    st.write('Bonus')
     if i.bonus:
         st.write(f'{i.bonus.fixed}')
     submit_button = st.form_submit_button(label='simulate')
