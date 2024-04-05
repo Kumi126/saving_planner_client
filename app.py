@@ -26,12 +26,11 @@ def add_accounts():
                 if more_intr:
                     intr_c += 1
                     add_interest(intr_c,link_account)
-            # else:
-            #     intr_c += 1
-        
+
         col1_1, col1_2, col1_3 = st.columns(3)
-        with col1_1:     
-            acc = Account(st.text_input(key=f'account_{count}', label=f'Account name{count}'))
+        with col1_1:
+            acc_name = st.text_input(key=f'account_{count}', label=f'Account name{count}')
+            acc = Account(name=acc_name)
         with col1_2:     
             acc.balance = st.number_input(key=f'balance_{count}', label='Account balance')
         with col1_3:     
@@ -58,13 +57,14 @@ def add_accounts():
             with col4_3:
                 bns.frequency = int(st.number_input(key=f'bonus_frequency_{count}', label='How often? (once in XX monthes)'))
 
+            acc.bonus = bns
         if count < max_accounts:
             add_more = st.toggle(key=f'tg_{count}',label=f'Add more contribute account')
+            accounts.append(acc)
             
             if add_more:
                 count += 1
                 intr_c += 100
-                accounts.append(acc)
                 add_account(count,intr_c)
         else:
             pass
@@ -72,12 +72,13 @@ def add_accounts():
     add_account(count,intr_c)
     return accounts
 
-simu: SimulateCondition 
+# simu: SimulateCondition 
 max_accounts = 8
 max_interest_condition = 3
 
 st.write('### Mulitipul account saving simulator')
-simu = SimulateCondition(st.text_input(key='simulate_name', label=f'Name this simulation', max_chars=20))
+simu_name = st.text_input(key='simulate_name', label=f'Name this simulation', max_chars=20)
+simu = SimulateCondition(name=simu_name)
 col0_1, col0_2, col0_3= st.columns(3)
 with col0_1:
     saving_year = st.text_input(key='saving_y',label='How long will you save?',max_chars=2,placeholder='year(s)')
@@ -94,15 +95,21 @@ if (saving_year and saving_month):
         st.error('Please put number of month/year')
 st.write('#### Accounts')
 accounts = add_accounts()
+conditon_submit_button = st.button(key='button_1', label='Submit condition')
+# if conditon_submit_button:
+#     simu.accounts = accounts
+with st.form('submit simulation'):
+    st.write('### ')
+    st.write(f'Simulation name: {simu.name}')
+    st.write(f'Contribute accounts:')
+    for i in accounts:
+        st.write(f'- {i.name}')
+    st.write('number of accounts')
+    st.write(len(accounts))
+    if i.bonus:
+        st.write(f'{i.bonus.fixed}')
+    submit_button = st.form_submit_button(label='simulate')
 
-
-st.write(simu)
 for i in accounts:
-    st.write('account obj')
-    st.write(i)
-    st.write('interest list')
-    st.write(i.interests[0])
-st.write('number of accounts')
-st.write(len(accounts))
-
-
+    print(f'- {i.name}')
+    
