@@ -20,13 +20,11 @@ class Account(BaseModel):
     name: str = Field(max_length=20)
     balance: float = 0.00
     monthly_add:float = 0.00
-    earned_interest: float = 0.00
-    earned_bonus: float = 0.00
     interest_transfer_tgt: Optional[str] = None
     interests: list[Interest] = []
     interest_periodicity: str = 'Monthly'
     bonus: Optional[Bonus] = None
-
+    
 
 class SimulateCondition(BaseModel):
     name:str = Field(max_length=20)
@@ -39,6 +37,7 @@ class SimulateCondition(BaseModel):
 class Simulate(SimulateCondition):
     total_balance: float
     earned_interest: float
+    earned_bonus: float = 0.00
     
     def decide_monthly_add(self, contributors: list['Contributor'], topup: float = 0):
         add: float = 0.00
