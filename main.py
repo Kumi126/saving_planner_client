@@ -1,7 +1,8 @@
 
 import os
-from app.schema import SavingPlan
-
+from app.schema import Simulate, Account
+from app.schema import Simulate, Account
+ 
 CONTRIBUTOR1: str = str(os.environ.get('contributor1'))
 CONTRIBUTOR2: str = str(os.environ.get('contributor2'))
 PLAN1: str = str(os.environ.get('plan1'))
@@ -32,9 +33,10 @@ CNTR2_SAVED:float = float(str(os.environ.get('ctb2_saved')))
 ## input condition
 
 def cal_plan():
-    plan = SavingPlan(PLAN1,13)
+    plan = Simulate(PLAN1)
+    plan.saving_month = 13
     
-    users:list[SavingPlan.Contributor] = []
+    users:list[Simulate.Contributor] = []
     users.append(usr1:= plan.Contributor(CONTRIBUTOR1, CNTR1_SAVED))
     users.append(usr2:= plan.Contributor(CONTRIBUTOR2, CNTR2_SAVED))
     
@@ -43,12 +45,17 @@ def cal_plan():
     adding = plan.decide_monthly_add(users)
 
     
-    accounts:list[SavingPlan.Account] = []
-    accounts.append(ac1:= plan.Account(AC1_NAME, 100))
-    accounts.append(ac2:= plan.Account(AC2_NAME, 4000))
-    accounts.append(ac3:= plan.Account(AC3_NAME, 4000))
-    accounts.append(ac4:= plan.Account(AC4_NAME, 1))
-    accounts.append(ac5:= plan.Account(AC5_NAME, 1))
+    accounts:list[Account] = []
+    accounts.append(ac1:= Account(AC1_NAME))
+    accounts.append(ac2:= Account(AC2_NAME))
+    accounts.append(ac3:= Account(AC3_NAME))
+    accounts.append(ac4:= Account(AC4_NAME))
+    accounts.append(ac5:= Account(AC5_NAME))
+    ac1.balance = 150
+    ac2.balance = 150
+    ac3.balance = 150
+    ac4.balance = 150
+    ac5.balance = 150
     accounts[0].interest_rate = accounts[0].set_interest_rate(AC1_INTRST_RATE)
     accounts[0].interest_rate_limited = accounts[0].set_interest_rate(AC1_INTRST_RATE_LIMITED) 
     accounts[1].interest_rate = accounts[1].set_interest_rate(AC2_INTRST_RATE)
@@ -63,6 +70,8 @@ def cal_plan():
     accounts[4].bonus_interest_rate = accounts[4].set_interest_rate(AC5_BONUS)
     accounts[3].bonus_limit = AC4_BONUS_LIMIT
     accounts[4].bonus_limit = AC5_BONUS_LIMIT
+    accounts[3].bonus_limit_period = 12
+    accounts[4].bonus_limit_period = 12
     accounts[3].bonus_frequency = AC4_BONUS_FREQUENCY
     accounts[4].bonus_frequency = AC5_BONUS_FREQUENCY
     
@@ -77,16 +86,16 @@ def cal_plan():
     else:
         print('There is no match target bank acount name')
     
-    accounts[0].monthly_add = 84
+    accounts[0].monthly_add = 117+12
     accounts[1].monthly_add = 0
     accounts[2].monthly_add = 0
-    accounts[3].monthly_add = 333
+    accounts[3].monthly_add = 222
     accounts[4].monthly_add = 333
     
     
     ac1.limited_period = 1 ##
     ac2.limited_period = 1 ##
-    ac3.limited_period = 3 ##
+    ac3.limited_period = 4 ##
   
     count_month: int = 1
     while count_month <= plan.saving_month:
