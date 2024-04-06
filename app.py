@@ -8,7 +8,7 @@ def add_accounts():
     intr_c = 1
     accounts:list[Account] = []
     def add_account(count,intr_c):
-        interests = []
+        # interests = []
         def add_interest(intr_c,link_account:Account):
             st.write(intr_c)
             interest = Interest()
@@ -20,8 +20,8 @@ def add_accounts():
             with col2_3:
                 interest.limited_period = int(st.number_input(key=f'limited_period_{intr_c}', label='For How many month?'))
             
-            interests.append(interest)
-            if len(interests) < max_interest_condition:
+            link_account.interests.append(interest)
+            if len(link_account.interests) < max_interest_condition:
                 more_intr = st.toggle(key=f'interest_toggle_{intr_c}',label=f'Add more interest conditions')
                 if more_intr:
                     intr_c += 1
@@ -29,8 +29,7 @@ def add_accounts():
 
         col1_1, col1_2, col1_3 = st.columns(3)
         with col1_1:
-            acc_name = st.text_input(key=f'account_{count}', label=f'Account name{count}')
-            acc = Account(name=acc_name)
+            acc = Account(st.text_input(key=f'account_{count}', label=f'Account name{count}'))
         with col1_2:     
             acc.balance = st.number_input(key=f'balance_{count}', label='Account balance')
         with col1_3:     
@@ -39,7 +38,7 @@ def add_accounts():
         st.write('##### Tell about interest')
         acc.interest_periodicity = str(st.radio(key=f'perid_{count}',label='Recieve interest', options=['Monthly', 'Annually']))
         add_interest(intr_c,acc)
-        acc.interests = interests
+        # acc.interests = interests
 
         bonus = st.toggle(key=f'bonus_toggle_{count}', label=f'Does this account have any periodical bonus? Or will you plan to tap up extra money occacionally?')
         if bonus:
@@ -96,21 +95,37 @@ if (saving_year and saving_month):
 st.write('#### Accounts')
 accounts = add_accounts()
 conditon_submit_button = st.button(key='button_1', label='Submit condition')
+
 # if conditon_submit_button:
 #     simu.accounts = accounts
 with st.form('submit simulation'):
     st.write('### ')
     st.write(f'Simulation name: {simu.name}')
     st.write(f'Contribute accounts:')
+    accounts_name = [i.name for i in accounts]
+    formc = 0
     for i in accounts:
-        st.write(f'- {i.name}')
+        col5_1, col5_2 = st.columns(2)
+        with col5_1:
+            st.write(f'- {i.name}')
+            st.write(f'- {i.interest_periodicity}')
+            st.write(f'- {i.interests}')
+        with col5_2:
+            st.write(i.interest_transfer_tgt)
+            i.interest_transfer_tgt = st.radio(key=f'tgt_{formc}',
+                label="Move earned interest from this account to:",
+                options=accounts_name,
+                index=None,
+            )
+
+        st.write('Bonus')
+        if i.bonus:
+            st.write(f'{i.bonus.fixed}')
     st.write('number of accounts')
     st.write(len(accounts))
-    st.write('Bonus')
-    if i.bonus:
-        st.write(f'{i.bonus.fixed}')
     submit_button = st.form_submit_button(label='simulate')
 
 for i in accounts:
     print(f'- {i.name}')
+    print(f'- {i.interest_transfer_tgt}')
     

@@ -16,15 +16,18 @@ class Bonus(BaseModel):
     fixed: float = 0.00
     fixed_frequency: int = 0
     
+    
 class Account(BaseModel):
-    name: str = Field(max_length=20)
+    name: str
     balance: float = 0.00
     monthly_add:float = 0.00
     interest_transfer_tgt: Optional[str] = None
-    interests: list[Interest] = []
+    interests: list
     interest_periodicity: str = 'Monthly'
     bonus: Optional[Bonus] = None
     
+    def __init__(self, name):
+        super().__init__(name=name, interests=[],bonus=None)
 
 class SimulateCondition(BaseModel):
     name:str = Field(max_length=20)
