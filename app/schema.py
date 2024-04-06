@@ -2,22 +2,42 @@
     
 class Account:
     name: str
-    interest_rate: float
-    interest_rate_limited: float
-    limited_period: int = 0
     balance: float
-    earned_interest: float = 0.00
-    bonus_interest_rate: float = 0.00
-    bonus_limit: float = 0.00
-    bonus_fixed: float = 0.00
-    bonus_frequency: int = 0
     monthly_add:float = 0.00
     interest_transfer: bool = False
     interest_transfer_tgt: str
+    earned_interest: float = 0.00
+    earned_bonus: float = 0.00
+    interests: list = []
+    interest_periodicity: str
     
-    def __init__(self, aname, balance):
+    interest_rate: float
+    interest_rate_limited: float
+    limited_period: int = 0
+    bonus_interest_rate: float = 0.00
+    bonus_limit: float = 0.00
+    bonus_limit_period: float = 0.00
+    bonus_fixed: float = 0.00
+    bonus_frequency: int = 0
+    
+    class Interest:
+        
+        rate: float
+        balance_tires: float
+        limited_period: int = 0
+        max_apply: float
+        limited_rate: float
+        
+    class Bonus:
+        interest_rate: float = 0.00
+        limit: float = 0.00
+        limit_period: float = 0.00
+        fixed: float = 0.00
+        frequency: int = 0
+        
+    
+    def __init__(self, aname):
         self.name = aname
-        self.balance = balance
     
     def set_interest_rate(self, rate: float):
         return rate/100
@@ -27,8 +47,7 @@ class SimulateCondition:
     accounts:list[Account]
     saving_month: int
     
-    def __init__(self, name:str, month:int):
-        self.saving_month = month
+    def __init__(self, name:str):
         self.name = name
 
 class Simulate(SimulateCondition):
@@ -53,7 +72,5 @@ class Simulate(SimulateCondition):
             self.saved  = saved
 
 
-# TODO ACCOUNT classに、金額上限の利率をつける　期間利率の名前を変える
-#　streamlitで描写
-# stream lit で複数入力の方法を探す while文でできるか？
-# ISAaccount
+# TODO class 名を整理して　利率・利率が与えられる上限額・特別金利・特別金利期間・に対応する
+# 　　
